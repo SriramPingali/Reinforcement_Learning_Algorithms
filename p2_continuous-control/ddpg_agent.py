@@ -22,12 +22,14 @@ class Agent():
             state_size (int): dimension of each state
             action_size (int): dimension of each action
             random_seed (int): random seed
+            hyper_params (dict): dictionary of hyper parameters
+            num_agents (int): nummber of agents(arms)
         """
         self.state_size = state_size
         self.action_size = action_size
         self.num_agents = num_agents
         self.hyper_params = hyper_params
-        self.seed = random.seed(random_seed)
+        # self.seed = random.seed(random_seed)
 
         # Actor Network (w/ Target Network)
         self.actor_local = Actor(state_size, action_size, random_seed).to(device)
@@ -78,8 +80,9 @@ class Agent():
             actions += self.noise.sample()
             #update the exploration parameter
             self.eps -= self.hyper_params[10]
-            if self.eps < self.hyper_params[9]:
-                self.eps = self.hyper_params[9]
+            self.eps = max(self.hyper_params[9], self.eps-self.hyper_params[9])
+            # if self.eps < self.hyper_params[9]:
+            #     self.eps = self.hyper_params[9]
             #self.noise.reset() #not sure if need to do this here
 
         return np.clip(actions, -1, 1)
@@ -159,7 +162,7 @@ class OUNoise:
         self.mu = mu * np.ones(size)
         self.theta = theta
         self.sigma = sigma
-        self.seed = random.seed(seed)
+        # self.seed = random.seed(seed)
         self.size = size
         self.reset()
 
@@ -170,7 +173,6 @@ class OUNoise:
     def sample(self):
         """Update internal state and return it as a noise sample."""
         x = self.state
-        #dx = self.theta * (self.mu - x) + self.sigma * np.array([random.random() for i in range(len(x))])
         dx = self.theta * (self.mu - x) + self.sigma * np.random.standard_normal(self.size)
         self.state = x + dx
         return self.state
@@ -189,7 +191,7 @@ class ReplayBuffer:
         self.memory = deque(maxlen=buffer_size)  # internal memory (deque)
         self.batch_size = batch_size
         self.experience = namedtuple("Experience", field_names=["state", "action", "reward", "next_state", "done"])
-        self.seed = random.seed(seed)
+        # self.seed = random.seed(seed)
     
     def add(self, state, action, reward, next_state, done):
         """Add a new experience to memory."""
