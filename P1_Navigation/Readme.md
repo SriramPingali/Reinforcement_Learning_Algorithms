@@ -1,6 +1,3 @@
-**Project Report: https://medium.com/@amitpatel.gt/double-dqn-48562b5f31c1**
-
-
 [//]: # (Image References)
 
 [image1]: https://user-images.githubusercontent.com/10624937/42135619-d90f2f28-7d12-11e8-8823-82b970a54d7e.gif "Trained Agent"
@@ -37,6 +34,24 @@ The task is episodic, and in order to solve the environment, your agent must get
 
 2. Place the file in the DRLND GitHub repository, in the `p1_navigation/` folder, and unzip (or decompress) the file. 
 
+3. Create (and activate) a new environment with Python 3.6.
+
+ - Linux or Mac:
+    ```
+    conda create --name drlnd python=3.6
+    source activate drlnd
+    ```
+ - Windows:
+    ```
+    conda create --name drlnd python=3.6 
+    activate drlnd
+    ```
+4. Clone the repository (Link provided below), and navigate to the python/ folder. Then, install several dependencies.
+    ```
+     git clone https://github.com/udacity/deep-reinforcement-learning.git
+     cd deep-reinforcement-learning/python
+     pip install .
+     
 ### Instructions
 
 Follow the instructions in `Navigation_Final.ipynb` to get started with training your own agent!  
