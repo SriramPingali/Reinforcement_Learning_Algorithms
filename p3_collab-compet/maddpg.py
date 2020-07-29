@@ -46,13 +46,13 @@ class MADDPG:
         # need to transpose each element of the samples
         # to flip obs[parallel_agent][agent_number] to
         # obs[agent_number][parallel_agent]
-        obs, obs_full, action, reward, next_obs, next_obs_full, done = map(transpose_to_tensor, samples)
+#         obs, obs_full, action, reward, next_obs, next_obs_full, done = map(transpose_to_tensor, samples)
 #         obs, action, reward, next_obs, done = map(transpose_to_tensor, samples)
-#         obs, obs_full, action, reward, next_obs, next_obs_full, done = samples
+        obs_full, obs, action, reward, next_obs_full, next_obs, done = samples
 #         obs, obs_full, action, reward, next_obs, next_obs_full, done = torch.from_numpy(obs), 
-        obs_full = torch.stack(obs_full)
+#         obs_full = torch.stack(obs_full)
 #         obs_full = torch.stack(obs)
-        next_obs_full = torch.stack(next_obs_full)
+#         next_obs_full = torch.stack(next_obs_full)
 #         next_obs_full = torch.stack(next_obs)
         
         agent = self.maddpg_agent[agent_number]
@@ -60,6 +60,7 @@ class MADDPG:
 
         #critic loss = batch mean of (y- Q(s,a) from target network)^2
         #y = reward of this timestep + discount * Q(st+1,at+1) from target network
+        print(len(next_obs[0]), len(self.maddpg_agent))
         target_actions = self.target_act(next_obs)
         target_actions = torch.cat(target_actions, dim=1)
         
