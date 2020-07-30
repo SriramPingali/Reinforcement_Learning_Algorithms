@@ -16,11 +16,14 @@ class Network(nn.Module):
         self.input_norm.weight.data.fill_(1)
         self.input_norm.bias.data.fill_(0)"""
 
+        self.actor = actor
         self.fc1 = nn.Linear(input_dim,hidden_in_dim)
-        self.fc2 = nn.Linear(hidden_in_dim,hidden_out_dim)
+        if self.actor:
+            self.fc2 = nn.Linear(hidden_in_dim,hidden_out_dim)
+        else:
+            self.fc2 = nn.Linear(hidden_in_dim + 4,hidden_out_dim)
         self.fc3 = nn.Linear(hidden_out_dim,output_dim)
         self.nonlin = f.relu #leaky_relu
-        self.actor = actor
         #self.reset_parameters()
 
     def reset_parameters(self):
@@ -32,18 +35,22 @@ class Network(nn.Module):
         if self.actor:
             # return a vector of the force
             h1 = self.nonlin(self.fc1(x))
-
             h2 = self.nonlin(self.fc2(h1))
             h3 = (self.fc3(h2))
             norm = torch.norm(h3)
             
             # h3 is a 2D vector (a force that is applied to the agent)
             # we bound the norm of the vector to be between 0 and 10
-            return 10.0*(f.tanh(norm))*h3/norm if norm > 0 else 10*h3
+            return 10.0*(torch.tanh(norm))*h3/norm if norm > 0 else 10*h3
         
         else:
-            # critic network simply outputs a number
-            h1 = self.nonlin(self.fc1(x))
-            h2 = self.nonlin(self.fc2(h1))
-            h3 = (self.fc3(h2))
-            return h3
+#             # critic network simply outputs a number
+#             h1 = self.nonlin(self.fc1(x))
+#             h2 = self.nonlin(self.fc2(h1))
+#             h3 = (self.fc3(h2))
+#             return h3
+            """Build a critic (value) network that maps (state, action) pairs -> Q-values."""
+            xs = self.nonlin(self.fc1(x[:, :48]))
+            x = torch.cat((xs, x[:, -4:]), dim=1)
+            x = self.nonlin(self.fc2(x))
+            return self.fc3(x)
